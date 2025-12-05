@@ -25,6 +25,99 @@ This chapter introduces NVIDIA Isaac ROS GEMs, focusing specifically on those de
 *   **Configuration**: Tuning parameters for different camera types and environments.
 *   **Integration with ROS 2**: Launching VSLAM nodes and visualizing outputs in RViz2.
 
-## Example: Building a 3D Map in Simulation
+## Example: Building a 3D Map in Simulation (Conceptual Isaac ROS VSLAM)
 
-(Example ROS 2 launch file and Python script to run the Isaac ROS VSLAM GEM in a simulated environment and visualize the generated map will go here.)
+This conceptual example outlines how you might use an Isaac ROS VSLAM GEM within a simulated environment to build a 3D map. We'll focus on the launch file configuration to integrate the VSLAM node with sensor data from a simulated camera.
+
+### 1. Conceptual ROS 2 Launch File (`vslam_example.launch.py`)
+
+This Python launch file would typically:
+*   Launch your simulation environment (e.g., Isaac Sim with a camera).
+*   Launch a `ros_bridge` to get sensor data (images) from the simulator into ROS 2.
+*   Launch the Isaac ROS VSLAM node, configuring it with the camera topic.
+
+```python
+# Conceptual ROS 2 Launch File: vslam_example.launch.py
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    # Path to the Isaac ROS VSLAM package
+    # vslam_ros_dir = get_package_share_directory('isaac_ros_vslam')
+
+    # Example: Launching Isaac Sim (conceptual)
+    # This would typically be a complex launch file from your simulator setup
+    # simulator_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         os.path.join(get_package_share_directory('isaac_sim_example'), 'launch', 'my_robot_sim.launch.py')
+    #     ]),
+    # )
+
+    # Isaac ROS VSLAM Node
+    # This node takes camera input and produces pose and map data
+    vslam_node = Node(
+        package='isaac_ros_vslam', # Actual package name for Isaac ROS VSLAM
+        executable='isaac_ros_vslam', # Actual executable name
+        name='vslam_node',
+        output='screen',
+        parameters=[
+            {
+                'enable_localization': True,
+                'enable_slam': True,
+                'input_odom_frame': 'odom',
+                'base_frame': 'base_link',
+                'enable_imu_fusion': False, # Assuming no IMU for simplicity
+                'gyro_bias_sigma': 0.0001,
+                'accel_bias_sigma': 0.001,
+                'calibration_preset': 'realsense', # Example preset
+                # Input topics from the simulated camera
+                'image_topic': '/camera/image_raw',
+                'camera_info_topic': '/camera/camera_info',
+                'depth_topic': '/camera/depth/image_raw',
+            }
+        ],
+        remappings=[
+            ('/stereo_camera/left/image_rect', '/camera/image_raw'), # Example remapping
+            ('/stereo_camera/left/camera_info', '/camera/camera_info'),
+        ]
+    )
+
+    # Conceptual RViz2 node for visualization
+    # rviz_node = Node(
+    #     package='rviz2',
+    #     executable='rviz2',
+    #     name='rviz_vslam',
+    #     output='screen',
+    #     arguments=['-d', os.path.join(vslam_ros_dir, 'rviz', 'vslam.rviz')] # Conceptual Rviz config
+    # )
+
+    return LaunchDescription([
+        # simulator_launch, # Uncomment if you have a simulator launch
+        vslam_node,
+        # rviz_node # Uncomment for visualization
+    ])
+```
+
+### Explanation
+
+This conceptual launch file demonstrates how to integrate the VSLAM GEM:
+1.  **Node Definition**: The `Node` action defines the `isaac_ros_vslam` node.
+2.  **Parameters**: Key parameters are passed, such as `enable_localization`, `enable_slam`, and importantly, the input topics for `image_topic`, `camera_info_topic`, and `depth_topic` which would come from your simulated camera.
+3.  **Remapping**: `remappings` can be used to align topic names from your simulator to what VSLAM expects.
+
+### How to Use (Conceptual)
+
+1.  Set up your simulated environment (e.g., in Isaac Sim) with a camera publishing ROS 2 topics (`/camera/image_raw`, `/camera/camera_info`, `/camera/depth/image_raw`).
+2.  Ensure you have the `isaac_ros_vslam` package installed in your ROS 2 workspace.
+3.  Build your workspace and source it.
+4.  Launch the VSLAM example:
+    ```bash
+    ros2 launch your_package_name vslam_example.launch.py
+    ```
+5.  Open RViz2 (if not launched automatically) and add displays for `PointCloud2` (for map), `TF` (for robot pose), and `Camera` (for image output) to visualize the VSLAM process.
+
+This setup allows the robot to process simulated sensor data and build a 3D map of the virtual environment.

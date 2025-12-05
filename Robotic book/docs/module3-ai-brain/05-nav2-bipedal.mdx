@@ -23,6 +23,121 @@ This chapter addresses the challenges of configuring the ROS 2 Navigation Stack 
 *   **Planner Selection**: Choosing or developing planners suitable for bipedal gait (e.g., footstep planners).
 *   **Localization**: Using IMU and vision data for robust pose estimation.
 
-## Example: Nav2 for a Humanoid Robot in a Simulated Apartment
+## Example: Nav2 for a Humanoid Robot in a Simulated Apartment (Conceptual Configuration)
 
-(Example Nav2 configuration files and launch scripts for a simulated humanoid robot navigating an apartment environment will go here.)
+Configuring Nav2 for a bipedal robot requires significant adaptations compared to a wheeled robot, especially concerning costmaps, local planners, and controllers to account for stability and gait. This conceptual example outlines key configuration modifications.
+
+### 1. Conceptual `nav2_params_bipedal.yaml`
+
+This YAML file would contain overrides or specific configurations for Nav2's components.
+
+```yaml
+# Conceptual nav2_params_bipedal.yaml
+# Global Planner (e.g., NavFn, ThetaStar, SmacPlanner)
+global_planner:
+  plugin_name: "GridBased" # Or another suitable planner
+  # ... other global planner parameters ...
+
+# Local Planner (e.g., DWB, TEB - often highly customized for bipedal)
+local_planner:
+  plugin_name: "BipedalMotionPlanner" # Conceptual custom planner
+  BipedalMotionPlanner:
+    max_linear_velocity: 0.1 # m/s
+    max_angular_velocity: 0.3 # rad/s
+    footstep_planning_plugin: "SimpleFootstepPlanner" # Conceptual footstep planner
+    # ... other custom bipedal planner parameters ...
+
+# Costmap Layers
+costmap_filter_info:
+  filters: ["footprint_filter", "obstacle_layer", "inflation_layer", "bipedal_cost_layer"]
+  footprint_filter:
+    plugin: "nav2_costmap_2d::FootprintFilter"
+    enabled: True
+    # Configuration to dynamically adjust footprint based on gait/stance
+  bipedal_cost_layer:
+    plugin: "nav2_costmap_2d::BipedalCostLayer" # Conceptual custom layer
+    enabled: True
+    # Parameters for traversability analysis based on terrain and robot state
+    # e.g., slope_threshold, step_height_limit, terrain_roughness_threshold
+
+# Controller Server
+controller_server:
+  ros__parameters:
+    controller_frequency: 20.0 # Hz
+    # ... other controller server parameters ...
+
+# Note: Actual bipedal specific plugins for local planner and costmap layers
+# would need to be developed or found in specialized bipedal navigation packages.
+```
+
+### 2. Conceptual ROS 2 Launch File (`humanoid_nav2_bringup.launch.py`)
+
+This launch file would integrate these parameters with the standard Nav2 bringup.
+
+```python
+# Conceptual ROS 2 Launch File: humanoid_nav2_bringup.launch.py
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, GroupAction
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import PushRosNamespace
+from nav2_common.launch import RewrittenYaml
+
+def generate_launch_description():
+    # Path to your custom Nav2 parameters
+    nav2_params_file = os.path.join(
+        get_package_share_directory('your_nav2_biped_package'), # Your custom package
+        'config',
+        'nav2_params_bipedal.yaml'
+    )
+
+    # Path to standard Nav2 bringup launch file
+    nav2_bringup_dir = get_package_share_directory('nav2_bringup')
+    nav2_launch_path = os.path.join(nav2_bringup_dir, 'launch', 'bringup_launch.py')
+
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            'params_file',
+            default_value=nav2_params_file,
+            description='Full path to the ROS2 parameters file to use for all launched nodes'),
+
+        GroupAction(
+            [
+                PushRosNamespace(
+                    namespace=LaunchConfiguration('namespace')),
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource(nav2_launch_path),
+                    launch_arguments={
+                        'map': LaunchConfiguration('map'),
+                        'use_sim_time': LaunchConfiguration('use_sim_time'),
+                        'params_file': LaunchConfiguration('params_file'),
+                        'autostart': LaunchConfiguration('autostart'),
+                        'default_bt_xml_path': LaunchConfiguration('default_bt_xml_path'),
+                        'use_lifecycle_nodes': LaunchConfiguration('use_lifecycle_nodes'),
+                        'force_start_rviz': LaunchConfiguration('force_start_rviz'),
+                        'rviz_config': LaunchConfiguration('rviz_config')
+                    }.items(),
+                ),
+            ]
+        )
+    ])
+```
+
+### Explanation
+
+*   **Custom Parameters**: The `nav2_params_bipedal.yaml` conceptually defines a custom `BipedalMotionPlanner` and a `BipedalCostLayer` for the costmap, along with specific parameters for bipedal locomotion.
+*   **Launch File**: The `humanoid_nav2_bringup.launch.py` then includes the standard Nav2 bringup launch file, overriding its parameters with our custom bipedal configurations.
+
+Implementing Nav2 for a bipedal robot often requires custom plugins for path planning and local control to manage the unique challenges of walking, such as maintaining balance and generating stable footstep plans.
+
+### How to Use (Conceptual)
+
+1.  Create a ROS 2 package (e.g., `your_nav2_biped_package`) and place the conceptual `nav2_params_bipedal.yaml` in its `config` directory and `humanoid_nav2_bringup.launch.py` in its `launch` directory.
+2.  Ensure your simulated humanoid robot is publishing sensor data (IMU, odometry, camera) and has a base link suitable for Nav2 localization.
+3.  Build your workspace and source it.
+4.  Launch Nav2:
+    ```bash
+    ros2 launch your_nav2_biped_package humanoid_nav2_bringup.launch.py use_sim_time:=True map:=/path/to/your/map.yaml
+    ```
+5.  You can then use the Nav2 Rviz plugin to set navigation goals for your bipedal robot in the simulated apartment.

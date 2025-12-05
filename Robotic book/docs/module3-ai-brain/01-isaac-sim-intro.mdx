@@ -25,4 +25,86 @@ This chapter introduces NVIDIA Isaac Sim, a powerful robotics simulation and dev
 
 ## Example: Basic Scene Setup in Isaac Sim
 
-(Example Python script or steps to set up a basic scene with a robot and a few objects in Isaac Sim will go here.)
+This Python script demonstrates how to set up a basic scene in NVIDIA Isaac Sim, including initializing the simulation world, adding a ground plane, and placing simple objects and a conceptual robot.
+
+```python
+# Conceptual Python script for Isaac Sim basic scene setup (not directly executable as standalone)
+from omni.isaac.core import World
+from omni.isaac.core.objects import DynamicCuboid
+from omni.isaac.franka.franka import Franka # Example robot from Isaac Sim library
+import numpy as np
+
+# This script is meant to be run within the Isaac Sim environment,
+# typically via the Script Editor or as an extension.
+
+def main():
+    print("--- Initializing Isaac Sim World ---")
+    world = World(stage_units_in_meters=1.0) # 1.0 means 1 meter in USD units
+    world.scene.add_default_ground_plane()
+
+    # --- Add simple objects ---
+    # Add a red cuboid
+    world.scene.add(
+        DynamicCuboid(
+            prim_path="/World/cube_red",
+            name="cube_red",
+            position=np.array([0.6, 0.0, 0.05]),
+            size=0.1,
+            color=np.array([1.0, 0.0, 0.0]),
+        )
+    )
+    # Add a blue sphere (conceptual example of adding different shapes)
+    # world.scene.add(
+    #     DynamicSphere(
+    #         prim_path="/World/sphere_blue",
+    #         name="sphere_blue",
+    #         position=np.array([0.0, 0.6, 0.05]),
+    #         radius=0.05,
+    #         color=np.array([0.0, 0.0, 1.0]),
+    #     )
+    # )
+
+    # --- Add a conceptual robot ---
+    # Here, we add a Franka Emika Panda robot as an example from Isaac Sim's library.
+    # Replace with your specific humanoid robot if available.
+    world.scene.add(
+        Franka(
+            prim_path="/World/Franka",
+            name="franka_robot",
+            position=np.array([0.0, 0.0, 0.0]), # Robot base on the ground
+        )
+    )
+
+    # Reset the world to apply changes
+    world.reset()
+
+    print("\n--- Scene Setup Complete ---")
+    print("Franka robot and objects added to the scene.")
+    print("You can now interact with the simulation.")
+
+    # To run the simulation, you would typically use a simulation loop:
+    # while world.is_running():
+    #     world.step(render=True) # Render and step physics
+    #     if world.current_time_step_index == 0:
+    #         world.get_physics_context().enable_gpu_dynamics(True) # Ensure GPU physics is enabled
+
+if __name__ == "__main__":
+    # This example requires Isaac Sim to be running.
+    # To execute: copy and paste into Isaac Sim Script Editor or run as an extension.
+    main()
+```
+
+### Explanation
+
+This script demonstrates the fundamental steps in Isaac Sim:
+1.  **World Initialization**: `World(stage_units_in_meters=1.0)` sets up the simulation environment.
+2.  **Ground Plane**: `world.scene.add_default_ground_plane()` adds a standard ground.
+3.  **Adding Objects**: `DynamicCuboid` is used to add simple dynamic objects (like the red cube). Other shapes can be added similarly.
+4.  **Adding Robots**: An example `Franka` robot from Isaac Sim's built-in assets is added. For a humanoid, you would reference your specific humanoid model.
+5.  **World Reset**: `world.reset()` applies all the changes and prepares the simulation.
+
+This script provides a foundation for building more complex Isaac Sim environments.
+
+### Reference
+
+*   `examples/isaac_sim_environments/randomized_scene.py` (for more advanced scene manipulation)

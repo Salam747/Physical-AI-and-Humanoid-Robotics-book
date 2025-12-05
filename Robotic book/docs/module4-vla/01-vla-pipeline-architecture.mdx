@@ -25,4 +25,55 @@ This chapter introduces the Vision-Language-Action (VLA) pipeline, a cutting-edg
 
 ## Example: Simple VLA Command Flow
 
-(A conceptual diagram and explanation of how a simple command like "wave your hand" flows through a VLA pipeline will go here.)
+Let's visualize how a simple natural language command, like "Wave your hand," would flow through a Vision-Language-Action (VLA) pipeline.
+
+### Conceptual VLA Pipeline Diagram
+
+```svg
+<!-- Robotic book/static/img/vla_pipeline_diagram.svg -->
+<svg width="600" height="200" viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="50" y="50" width="100" height="100" fill="#FFC0CB"/>
+<text x="75" y="105" fill="black" font-family="Arial" font-size="14">Vision</text>
+
+<path d="M150 100 H200" stroke="black" stroke-width="2"/>
+<polygon points="190,90 210,100 190,110" fill="black"/>
+
+<rect x="250" y="50" width="100" height="100" fill="#ADD8E6"/>
+<text x="260" y="105" fill="black" font-family="Arial" font-size="14">Language (LLM)</text>
+
+<path d="M350 100 H400" stroke="black" stroke-width="2"/>
+<polygon points="390,90 410,100 390,110" fill="black"/>
+
+<rect x="450" y="50" width="100" height="100" fill="#90EE90"/>
+<text x="475" y="105" fill="black" font-family="Arial" font-size="14">Action</text>
+</svg>
+```
+
+The above diagram, represented by `Robotic book/static/img/vla_pipeline_diagram.svg`, illustrates the three primary components.
+
+### Explanation of Command Flow ("Wave your hand")
+
+1.  **Vision Module**:
+    *   **Input**: Camera feed (e.g., from a simulated camera in Isaac Sim).
+    *   **Process**: Identifies the robot's current pose, detects its arm and hand, and understands the surrounding environment. It provides this visual context to the LLM.
+    *   **Output**: Structured visual information (e.g., "robot arm detected at pose X, hand is open").
+
+2.  **Language Module (LLM)**:
+    *   **Input**: Natural language command "Wave your hand" + visual context from the Vision Module.
+    *   **Process**: The LLM interprets the command "Wave your hand" in context. It uses its knowledge to determine that "wave" is a gesture involving repetitive motion of the arm/hand, and "hand" refers to the robot's end-effector. It then generates a high-level plan or sequence of actions.
+    *   **Output**: High-level plan (e.g., `[{"action": "raise_arm"}, {"action": "perform_waving_gesture"}, {"action": "lower_arm"}]`) or more direct action primitives.
+
+3.  **Action Module**:
+    *   **Input**: The high-level plan from the Language Module.
+    *   **Process**: Translates the LLM's plan into concrete, low-level robot commands.
+        *   `raise_arm` might be translated into a series of joint angle commands for the arm.
+        *   `perform_waving_gesture` would involve a sequence of repetitive joint movements.
+        *   `lower_arm` would bring the arm back to a neutral position.
+        This module might use a motion planner (like MoveIt 2) for collision-free trajectories.
+    *   **Output**: Execution of physical movements by the robot.
+
+This iterative process of perception, interpretation, planning, and execution enables robots to respond intelligently to human commands.
+
+### Reference
+
+*   `Robotic book/static/img/vla_pipeline_diagram.svg`

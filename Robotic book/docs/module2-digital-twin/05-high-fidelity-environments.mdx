@@ -28,6 +28,71 @@ This chapter delves into creating and utilizing high-fidelity simulation environ
 *   **Lighting and Shadows**: Configuring physically accurate illumination.
 *   **Camera and Sensor Placement**: Integrating virtual sensors within the environment.
 
-## Example: Loading a Humanoid in a Virtual Apartment
+## Example: Loading a Humanoid in a Virtual Apartment (Conceptual Isaac Sim Script)
 
-(Example script or commands for loading a humanoid robot into a pre-built virtual apartment environment within Isaac Sim will go here.)
+This conceptual Python script for NVIDIA Isaac Sim demonstrates how to load a pre-built USD environment (like our `apartment_scene.usd`) and then place a humanoid robot model within it.
+
+```python
+# Conceptual Python script for Isaac Sim (not directly executable as standalone)
+import omni.isaac.core as icore
+import os
+
+# Assuming an Isaac Sim environment is already set up and running
+# world = icore.World(stage_units_in_meters=1.0)
+
+def load_environment(usd_path):
+    # This is conceptual. In Isaac Sim, you'd load the USD stage directly.
+    # icore.get_stage().Load(usd_path)
+    print(f"Loading environment from USD: {usd_path}")
+    # omni.usd.get_context().open_stage(usd_path)
+
+def load_humanoid(robot_usd_path, position, orientation):
+    # This is conceptual. In Isaac Sim, you'd typically add a robot from its USD path
+    # and set its initial pose.
+    print(f"Loading humanoid robot from USD: {robot_usd_path}")
+    print(f"Placing robot at position: {position}, orientation: {orientation}")
+    # from omni.isaac.core.articulations import Articulation
+    # robot = world.scene.add(Articulation(
+    #     prim_path="/World/Humanoid",
+    #     usd_path=robot_usd_path,
+    #     position=position,
+    #     orientation=orientation
+    # ))
+    # return robot
+
+def main():
+    print("--- Setting up High-Fidelity Environment ---")
+    
+    # Path to our example apartment scene USD
+    apartment_usd_path = os.path.abspath("examples/environments/apartment_scene.usd")
+    
+    # Conceptual path to a humanoid robot USD (replace with actual robot model path)
+    humanoid_usd_path = "/Isaac/Robots/Humanoid/humanoid.usd" # Example path within Isaac Sim assets
+    
+    # Initial position and orientation for the robot in the scene
+    robot_initial_position = [0.0, 0.0, 0.9] # x, y, z (approximate height)
+    robot_initial_orientation = [1.0, 0.0, 0.0, 0.0] # w, x, y, z (quaternion, default orientation)
+
+    load_environment(apartment_usd_path)
+    # humanoid = load_humanoid(humanoid_usd_path, robot_initial_position, robot_initial_orientation)
+
+    print("\n--- Environment and Humanoid Loaded ---")
+    print(f"Virtual apartment scene: {apartment_usd_path}")
+    print(f"Humanoid robot (conceptual): {humanoid_usd_path} placed.")
+
+if __name__ == '__main__':
+    main()
+```
+
+### Explanation
+
+This conceptual script demonstrates the steps to:
+1.  **Load a high-fidelity environment**: It references `examples/environments/apartment_scene.usd`, which represents a detailed virtual apartment.
+2.  **Load a humanoid robot**: Conceptually adds a humanoid robot model (e.g., from Isaac Sim's asset library) into this loaded environment.
+3.  **Set Initial Pose**: Places the robot at a specified starting position and orientation within the scene.
+
+By using such scripts, you can quickly set up complex, realistic simulation environments to test robot behaviors.
+
+### Reference
+
+*   `examples/environments/apartment_scene.usd`

@@ -23,6 +23,52 @@ This chapter culminates your journey through the Physical AI and Humanoid Roboti
 4.  **Testing and Debugging**: Systematically test each component and the integrated system.
 5.  **Demonstration**: Showcase the robot executing natural language commands.
 
-## Example: Capstone Scenario
+## Example: Capstone Scenario - "Fetch the Yellow Ball from the Living Room"
 
-(A detailed description of a potential capstone project scenario, e.g., "Humanoid robot navigates a room, identifies a target object based on a natural language description, picks it up, and delivers it to another location," will go here, outlining the steps involved from command to execution.)
+This capstone project scenario integrates all the knowledge and tools from previous modules into a cohesive Vision-Language-Action (VLA) system.
+
+**Scenario Description**: A human user gives the robot a natural language command: **"Robot, please fetch the yellow ball from the living room and bring it to me."**
+
+The humanoid robot is initially in a charging station in the hallway of a simulated apartment.
+
+### Integrated Pipeline Steps:
+
+1.  **Natural Language Understanding (LLM Integration - Module 4)**:
+    *   The natural language command is received by an external Python agent (simulating an LLM, building upon `examples/llm_robot_control/llm_planner.py`).
+    *   The LLM interprets the command, identifies key entities ("yellow ball", "living room", "me"), and decomposes it into a high-level plan:
+        1.  Navigate to the living room.
+        2.  Locate the yellow ball.
+        3.  Grasp the yellow ball.
+        4.  Navigate to the user's location.
+        5.  Release the yellow ball.
+
+2.  **Navigation to Living Room (AI-Robot Brain - Module 3)**:
+    *   The "Navigate to the living room" command is passed to the robot's navigation stack (Nav2, adapted for bipedal motion, drawing from `05-nav2-bipedal.mdx`).
+    *   The robot uses its internal map (built via VSLAM, `03-isaac-ros-gems-slam.mdx`) and localization to plan a path through the simulated apartment.
+    *   The humanoid executes walking gaits to reach the living room, avoiding static and dynamic obstacles (PeopleNet, `04-isaac-ros-gems-perception.mdx`).
+
+3.  **Object Location (Vision & Perception - Module 3 & 4)**:
+    *   Upon reaching the living room, the "Locate the yellow ball" sub-goal activates the vision system (`03-vision-language-processing.mdx`).
+    *   The robot uses its onboard cameras (simulated, with noise models from `04-sensor-simulation.mdx`) to scan the environment.
+    *   A perception module (e.g., using object detection models like PeopleNet/DetectNet, configured using Isaac ROS GEMs) identifies objects, and potentially their colors and shapes.
+    *   The LLM might query the vision module to confirm the presence and precise pose of the "yellow ball" using multimodal fusion.
+
+4.  **Grasping the Object (Action Execution - Module 4)**:
+    *   Once the yellow ball's pose is confirmed, the "Grasp the yellow ball" command is translated into a sequence of manipulation actions (`04-robot-action-execution.mdx`).
+    *   The robot's 7-DoF arm (modeled with URDF/Xacro, `05-urdf-xacro-modeling.mdx`) plans a collision-free trajectory to the ball.
+    *   Reinforcement learning (from `06-reinforcement-learning-basics.mdx`) or traditional motion planning ensures a successful grasp.
+    *   The robot's gripper closes on the ball.
+
+5.  **Navigation to User (AI-Robot Brain - Module 3)**:
+    *   The robot then navigates to the user's location (using Nav2 again), carefully holding the yellow ball.
+
+6.  **Release Object (Action Execution - Module 4)**:
+    *   Upon reaching the user, the "Release the yellow ball" command is executed, the gripper opens, and the ball is placed down or handed over.
+
+### Simulation Environment (Digital Twin - Module 2)
+
+All these actions occur within a high-fidelity digital twin environment (e.g., Isaac Sim, building upon `05-high-fidelity-environments.mdx`) that accurately simulates physics (`03-physics-tuning.mdx`), sensor data (`04-sensor-simulation.mdx`), and environmental details (`apartment_scene.usd`). The `Robotic book/docs/module2-digital-twin/06-unity-visualization.mdx` could then be used to create an HRI interface to monitor and interact with this process.
+
+### Reference
+
+*   `examples/capstone_vla_robot/README.md` (provides an overview of the capstone project repository)

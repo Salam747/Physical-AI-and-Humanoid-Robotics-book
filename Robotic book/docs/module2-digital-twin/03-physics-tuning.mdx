@@ -22,6 +22,88 @@ This chapter focuses on tuning the physics parameters of your digital twin to ac
 *   **High-Friction Surfaces**: High friction coefficients (e.g., rubber).
 *   **Soft/Deformable Objects**: Adjusting contact parameters.
 
-## Example: Tuning a Robot on Different Surfaces
+## Example: Tuning a Robot on Different Surfaces (Conceptual Isaac Sim Script)
 
-(Example simulation setup demonstrating how to adjust friction parameters and observe robot behavior on different virtual surfaces will go here.)
+This conceptual Python script for NVIDIA Isaac Sim demonstrates how to load a simple robot and dynamically adjust its friction properties to simulate interaction with different virtual surfaces. We'll reference our `examples/simulation_configs/physics_config.json` for parameters.
+
+```python
+# Conceptual Python script for Isaac Sim (not directly executable as standalone)
+import omni.isaac.core as icore
+import json
+
+def setup_scene(world):
+    # Set up a basic scene with a ground plane
+    world.scene.add_default_ground_plane(
+        prim_path="/World/GroundPlane",
+        # Example of setting ground plane friction from config
+        # Assuming we have a default ground friction defined
+        static_friction=1.0, # Will be overridden if specified in config
+        dynamic_friction=1.0 # Will be overridden if specified in config
+    )
+
+    # Add a simple cuboid robot
+    from omni.isaac.core.objects import DynamicCuboid
+    robot_cuboid = world.scene.add(
+        DynamicCuboid(
+            prim_path="/World/Robot",
+            name="robot_cuboid",
+            position=icore.utils.prims.get_prim_at_path("/World/Robot").get_world_pose().p, # Example position, replace with actual
+            scale=icore.utils.prims.get_prim_at_path("/World/Robot").get_world_pose().s,
+            size=0.1,
+            density=1000.0, # kg/m^3
+        )
+    )
+    return robot_cuboid
+
+def apply_friction(rigid_prim, static_mu, dynamic_mu):
+    # This is conceptual. In Isaac Sim, you'd modify the PhysX material directly.
+    # For a simplified view, imagine setting these values on the prim directly.
+    print(f"Applying friction: Static={static_mu}, Dynamic={dynamic_mu} to {rigid_prim.name}")
+    # rigid_prim.set_static_friction(static_mu)
+    # rigid_prim.set_dynamic_friction(dynamic_mu)
+
+def main():
+    # Initialize Isaac Sim (conceptual)
+    # icore.initialize()
+    # world = icore.World(stage_units_in_meters=1.0)
+    # robot = setup_scene(world)
+
+    print("--- Loading Physics Configurations ---")
+    with open("examples/simulation_configs/physics_config.json", 'r') as f:
+        physics_configs = json.load(f)
+
+    # Simulate different surfaces
+    surfaces = {
+        "slippery_tiles": {"static": 0.1, "dynamic": 0.05},
+        "rubber_mat": physics_configs["friction_coefficients"]["rubber_on_asphalt"]
+    }
+
+    print("\n--- Simulating on Slippery Tiles ---")
+    # apply_friction(robot, surfaces["slippery_tiles"]["static"], surfaces["slippery_tiles"]["dynamic"])
+    print(f"Robot would now interact with static friction: {surfaces['slippery_tiles']['static']} and dynamic friction: {surfaces['slippery_tiles']['dynamic']}")
+    # Run simulation step and observe behavior (e.g., increased sliding)
+
+    print("\n--- Simulating on Rubber Mat ---")
+    # apply_friction(robot, surfaces["rubber_mat"]["static"], surfaces["rubber_mat"]["dynamic"])
+    print(f"Robot would now interact with static friction: {surfaces['rubber_mat']['static']} and dynamic friction: {surfaces['rubber_mat']['dynamic']}")
+    # Run simulation step and observe behavior (e.g., reduced sliding)
+
+    # icore.shutdown() # Shutdown Isaac Sim (conceptual)
+
+if __name__ == '__main__':
+    main()
+```
+
+### Explanation
+
+This conceptual script demonstrates the workflow:
+1.  **Loading Configuration**: It loads `physics_config.json` to get predefined material properties.
+2.  **Scene Setup**: Conceptually sets up a robot in an Isaac Sim environment.
+3.  **Dynamic Friction Application**: It then simulates applying different friction coefficients (e.g., for "slippery tiles" vs. "rubber mat") to the robot's contact surfaces.
+4.  **Observation**: In a real simulation, you would run the physics engine for a few steps and observe how the robot's behavior changes (e.g., how far it slides, how easily it moves).
+
+By varying these parameters and observing the simulated robot's interactions, you can tune the physics to match desired real-world behaviors.
+
+### Reference
+
+*   `examples/simulation_configs/physics_config.json`

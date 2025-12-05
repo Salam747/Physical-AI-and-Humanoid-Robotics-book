@@ -21,6 +21,116 @@ This chapter explores the use of Unity, a powerful real-time 3D development plat
 *   **User Interface Development**: Building intuitive dashboards and control panels in Unity.
 *   **Data Collection**: Recording human responses and robot behaviors during HRI experiments.
 
-## Example: Unity Dashboard for Humanoid Control
+## Example: Unity Dashboard for Humanoid Control (Conceptual Setup)
 
-(Example Unity project structure and script snippets for a basic HRI dashboard controlling a simulated humanoid will go here.)
+This conceptual example outlines how you might set up a Unity project to create a Human-Robot Interaction (HRI) dashboard for controlling and visualizing a simulated humanoid robot, integrating with ROS 2. We'll reference `examples/environments/unity_hri_layout.json` for the dashboard layout.
+
+### 1. Conceptual Unity Project Structure
+
+A typical Unity project for robotics HRI might look like this:
+
+```
+UnityProject/
+├── Assets/
+│   ├── Scenes/
+│   │   └── MainHRI.unity          # Main scene for the dashboard
+│   ├── Scripts/
+│   │   ├── RosConnector.cs        # Handles ROS 2 communication (e.g., via ROS-TCP-Connector)
+│   │   ├── RobotVisualizer.cs     # Displays robot model and state
+│   │   ├── SensorDisplay.cs       # Renders sensor data (LiDAR, Depth, IMU)
+│   │   └── CommandInput.cs        # Manages sending commands to the robot
+│   ├── Prefabs/
+│   │   └── HumanoidRobot.prefab   # 3D model of your humanoid robot
+│   ├── UI/
+│   │   └── DashboardCanvas.prefab # UI elements for the dashboard
+│   └── Resources/                 # Any assets loaded at runtime
+│       └── unity_hri_layout.json  # Our conceptual layout definition
+├── ProjectSettings/
+└── Packages/
+    └── com.unity.robotics.ros-tcp-connector/ # ROS-TCP-Connector package
+```
+
+### 2. ROS-Unity Integration (Conceptual)
+
+The `RosConnector.cs` script would be responsible for establishing communication with your ROS 2 network, typically using a package like `ROS-TCP-Connector`. It would:
+
+*   **Subscribe** to ROS 2 topics publishing robot state, sensor data (from your digital twin in Isaac Sim/Gazebo).
+*   **Publish** to ROS 2 topics or action goals for robot commands.
+
+### 3. HRI Dashboard Layout (`unity_hri_layout.json`)
+
+Our conceptual dashboard layout, as defined in `examples/environments/unity_hri_layout.json`, describes the different panels and their functions:
+
+```json
+{
+  "layout_name": "Humanoid Control Dashboard",
+  "panels": [
+    {
+      "type": "RobotView",
+      "position": [0, 0],
+      "size": [800, 600]
+    },
+    {
+      "type": "SensorDataDisplay",
+      "position": [800, 0],
+      "size": [400, 300],
+      "data_sources": ["LiDAR", "IMU"]
+    },
+    {
+      "type": "CommandInput",
+      "position": [800, 300],
+      "size": [400, 300],
+      "command_types": ["joint_control", "high_level_goals"]
+    }
+  ]
+}
+```
+
+This JSON would be read by a Unity script (e.g., `DashboardBuilder.cs` not shown) to dynamically arrange UI elements for the robot view, sensor data displays, and command input controls.
+
+### 4. Conceptual Script Snippet (`CommandInput.cs`)
+
+Here's a conceptual C# script snippet for a `CommandInput` component that might send a high-level goal based on user input:
+
+```csharp
+// Conceptual C# script in Unity (CommandInput.cs)
+using UnityEngine;
+using UnityEngine.UI;
+// using RosMessageTypes.Std; // Assuming ROS-TCP-Connector
+// using Unity.Robotics.ROSTCPConnector; // Assuming ROS-TCP-Connector
+
+public class CommandInput : MonoBehaviour
+{
+    public InputField commandInputField;
+    public Button sendCommandButton;
+    // public string rosTopicName = "/humanoid_commands"; // ROS 2 topic to publish to
+
+    void Start()
+    {
+        if (sendCommandButton != null)
+        {
+            sendCommandButton.onClick.AddListener(OnSendCommand);
+        }
+        // ROSConnection.instance.RegisterPublisher<StringMsg>(rosTopicName); // Example ROS publisher setup
+    }
+
+    void OnSendCommand()
+    {
+        string commandText = commandInputField.text;
+        if (!string.IsNullOrWhiteSpace(commandText))
+        {
+            Debug.Log("Sending command: " + commandText);
+            // Example of publishing a ROS 2 message
+            // StringMsg commandMsg = new StringMsg(commandText);
+            // ROSConnection.instance.Publish(rosTopicName, commandMsg);
+            commandInputField.text = ""; // Clear input field
+        }
+    }
+}
+```
+
+This setup allows for rich, interactive visualizations and control interfaces, enhancing the HRI experience with your digital twin.
+
+### Reference
+
+*   `examples/environments/unity_hri_layout.json`

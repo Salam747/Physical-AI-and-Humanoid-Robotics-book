@@ -22,6 +22,147 @@ This chapter covers the essential tools and techniques for orchestrating ROS 2 a
 *   **Displays**: Visualizing robot models (URDF), sensor data (point clouds, images), topics, and frames.
 *   **Debugging**: Identifying coordinate frame issues, sensor misalignments, and unexpected robot behavior.
 
-## Example: Humanoid Launch File
+## Example: Humanoid Launch File for RViz2 Visualization
 
-(Example of a ROS 2 launch file for a humanoid robot, including parameter setup and RViz2 configuration, will go here.)
+This example demonstrates how to create a Python-based ROS 2 launch file to:
+1.  Process a Xacro file to generate the robot description.
+2.  Start the `robot_state_publisher` node to broadcast the robot's transformations.
+3.  Launch RViz2 for 3D visualization of the robot model.
+
+### 1. Create the Launch Package Structure
+
+First, create the following directory structure in your ROS 2 workspace `src` folder (or in `examples/ros2_launch_example/` as we've done here):
+
+```
+examples/ros2_launch_example/
+└── humanoid_launch/
+    ├── package.xml
+    ├── CMakeLists.txt
+    └── launch/
+        └── humanoid_view.launch.py
+```
+
+### 2. Package Configuration Files
+
+#### `package.xml`
+
+This file declares the `humanoid_launch` package and its dependencies.
+
+```xml
+<!-- examples/ros2_launch_example/humanoid_launch/package.xml -->
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>humanoid_launch</name>
+  <version>0.0.0</version>
+  <description>ROS 2 launch files for humanoid robot visualization</description>
+  <maintainer email="user@example.com">user</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>rviz2</depend>
+  <depend>xacro</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+```
+
+#### `CMakeLists.txt`
+
+This file handles the building and installation of our launch files.
+
+```cmake
+<!-- examples/ros2_launch_example/humanoid_launch/CMakeLists.txt -->
+cmake_minimum_required(VERSION 3.8)
+project(humanoid_launch)
+
+if(CMAKE_COMPILER_ID STREQUAL "GNU")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+find_package(ament_cmake REQUIRED)
+find_package(ament_python REQUIRED)
+find_package(launch REQUIRED)
+find_package(launch_ros REQUIRED)
+
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+ament_package()
+```
+
+### 3. Launch File (`humanoid_view.launch.py`)
+
+This Python launch file processes the `humanoid_macro_example.xacro` (which we created in the previous chapter) and launches `robot_state_publisher` and `rviz2`.
+
+```python
+# examples/ros2_launch_example/humanoid_launch/launch/humanoid_view.launch.py
+import os
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration, Command
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    # Get the launch directory
+    humanoid_launch_dir = get_package_share_directory('humanoid_launch')
+    
+    # Path to your URDF/Xacro file
+    xacro_file_path = os.path.join(
+        os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')),
+        'examples',
+        'humanoid_macro_example.xacro'
+    )
+    
+    # Process the URDF/Xacro file
+    robot_description_content = Command(['xacro ', xacro_file_path])
+    robot_description = {'robot_description': robot_description_content}
+
+    # Robot State Publisher Node
+    robot_state_publisher_node = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[robot_description]
+    )
+
+    # RViz2 Node
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+    )
+
+    return LaunchDescription([
+        robot_state_publisher_node,
+        rviz_node
+    ])
+```
+
+### 4. How to Build and Run
+
+1.  Place the `humanoid_launch` package (`examples/ros2_launch_example/humanoid_launch/`) into the `src/` directory of your ROS 2 workspace.
+2.  Ensure you have `humanoid_macro_example.xacro` available as referenced in the launch file.
+3.  From the root of your ROS 2 workspace, build the package:
+    ```bash
+    colcon build --packages-select humanoid_launch
+    ```
+4.  Source your workspace:
+    ```bash
+    source install/setup.bash
+    ```
+5.  Launch the file:
+    ```bash
+    ros2 launch humanoid_launch humanoid_view.launch.py
+    ```
+RViz2 should launch, and you should see the humanoid robot model. You may need to add the `RobotModel` display in RViz2 and set its `Description Source` to `Robot Description`.

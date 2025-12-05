@@ -23,4 +23,92 @@ This chapter explores how Large Language Models (LLMs) can be integrated into a 
 
 ## Example: LLM-driven Object Retrieval
 
-(Example pseudo-code or Python script illustrating how an LLM might receive a command like "get me the apple from the table," decompose it, and call robot actions to achieve the goal will go here.)
+This example utilizes our conceptual `examples/llm_robot_control/llm_planner.py` script to demonstrate how an LLM can receive a natural language command ("pick up red ball"), decompose it into a high-level plan, and then translate that plan into low-level robot actions.
+
+### `llm_planner.py`
+
+```python
+# examples/llm_robot_control/llm_planner.py
+import openai # or any other LLM API client
+import json
+
+def get_llm_plan(natural_language_command, current_robot_state):
+    """
+    Simulates an LLM generating a high-level plan from a natural language command.
+    """
+    prompt = f"Given the robot state: {current_robot_state}, generate a high-level plan to execute the command: '{natural_language_command}'. " \
+             "Output the plan as a JSON list of actions, where each action is a dictionary with 'name' and 'params'."
+
+    # This is a placeholder for actual LLM API call
+    # response = openai.Completion.create(engine="davinci", prompt=prompt, max_tokens=100)
+    # llm_output = response.choices[0].text.strip()
+
+    # Simulate LLM output for demonstration
+    if "pick up red ball" in natural_language_command.lower():
+        llm_output = """
+        [
+            {"name": "move_to_object", "params": {"object_id": "red_ball"}},
+            {"name": "grasp_object", "params": {"object_id": "red_ball"}},
+            {"name": "move_to_location", "params": {"location": "drop_zone"}}
+        ]
+        """
+    else:
+        llm_output = """
+        [
+            {"name": "explore_environment", "params": {}},
+            {"name": "wait", "params": {"duration": 5}}
+        ]
+        """
+    
+    try:
+        plan = json.loads(llm_output)
+        return plan
+    except json.JSONDecodeError:
+        print("LLM output was not valid JSON.")
+        return []
+
+def translate_plan_to_robot_actions(llm_plan):
+    """
+    Translates high-level LLM plan into low-level robot actions.
+    """
+    robot_actions = []
+    for action in llm_plan:
+        if action["name"] == "move_to_object":
+            robot_actions.append(f"Execute: move_arm_to_object({action['params']['object_id']})")
+        elif action["name"] == "grasp_object":
+            robot_actions.append(f"Execute: close_gripper({action['params']['object_id']})")
+        elif action["name"] == "move_to_location":
+            robot_actions.append(f"Execute: navigate_to_waypoint({action['params']['location']})")
+        else:
+            robot_actions.append(f"Execute: {action['name']}({action['params']})")
+    return robot_actions
+
+if __name__ == "__main__":
+    command = "Please pick up the red ball and place it on the table."
+    state = {"objects_in_view": ["red_ball", "blue_cube"], "robot_position": "near_table"}
+    
+    high_level_plan = get_llm_plan(command, state)
+    print("High-Level LLM Plan:", high_level_plan)
+    
+    low_level_actions = translate_plan_to_robot_actions(high_level_plan)
+    print("Low-Level Robot Actions:", low_level_actions)
+```
+
+### Explanation
+
+This script demonstrates the conceptual flow:
+1.  **`get_llm_plan()`**: This function simulates an LLM call. It takes a natural language command and the robot's current state (e.g., objects in view, robot position). Based on this input, it "generates" a high-level plan as a JSON list of actions. In a real system, this would be an API call to an LLM.
+2.  **`translate_plan_to_robot_actions()`**: This function takes the LLM's high-level plan and translates it into more specific, low-level robot actions. For instance, "move_to_object" becomes a call to `move_arm_to_object()`. This translation layer is crucial for safety and ensuring the LLM's abstract commands are executable.
+
+### How to Run
+
+1.  Ensure you have `examples/llm_robot_control/llm_planner.py` in your project.
+2.  Run the script from your terminal:
+    ```bash
+    python3 examples/llm_robot_control/llm_planner.py
+    ```
+You will see the simulated LLM plan and the resulting low-level robot actions printed to the console.
+
+### Reference
+
+*   `examples/llm_robot_control/llm_planner.py`

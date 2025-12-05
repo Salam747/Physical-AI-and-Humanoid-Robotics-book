@@ -23,6 +23,71 @@ This chapter delves into the Unified Robot Description Format (URDF) and its pow
 *   **Degrees of Freedom (DoF)**: Understanding and modeling complex humanoid movements.
 *   **Materials and Textures**: Enhancing visual realism.
 
-## Example: Humanoid Leg Segment
+## Example: Humanoid Leg Segment (using Xacro Macros)
 
-(Example Xacro code for a single leg segment of a humanoid robot will go here.)
+Instead of repeating code for each limb, Xacro allows us to define reusable macros. Here's how you can define and use a macro for an arm segment, allowing you to easily add multiple arms with similar structures.
+
+### `humanoid_macro_example.xacro`
+
+```xml
+<?xml version="1.0"?>
+<robot name="humanoid_with_macros" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.2"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.2"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <xacro:macro name="arm_segment" params="prefix parent_link_name origin_xyz">
+    <link name="${prefix}_arm_link">
+      <visual>
+        <geometry>
+          <box size="0.05 0.05 0.15"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.05 0.05 0.15"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.5"/>
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_joint" type="revolute">
+      <parent link="${parent_link_name}"/>
+      <child link="${prefix}_arm_link"/>
+      <origin xyz="${origin_xyz}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit lower="-1.57" upper="1.57" effort="100" velocity="10"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:arm_segment prefix="right" parent_link_name="base_link" origin_xyz="0.0 -0.075 0.15"/>
+  <xacro:arm_segment prefix="left" parent_link_name="base_link" origin_xyz="0.0 0.075 0.15"/>
+
+</robot>
+```
+
+### How to Use
+
+1.  Save the above content as `humanoid_macro_example.xacro` in your ROS 2 package (e.g., `examples/ros2_humanoid_control_example/humanoid_control/urdf/`).
+2.  To process this Xacro file into a standard URDF, use the following command:
+    ```bash
+    ros2 run xacro xacro --inorder humanoid_macro_example.xacro > robot.urdf
+    ```
+3.  You can then visualize the generated `robot.urdf` in RViz2.
