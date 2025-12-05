@@ -1,0 +1,16 @@
+<svg width="600" height="200" viewBox="0 0 600 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="50" y="50" width="100" height="100" fill="#FFC0CB"/>
+<text x="75" y="105" fill="black" font-family="Arial" font-size="14">Vision</text>
+
+<path d="M150 100 H200" stroke="black" stroke-width="2"/>
+<polygon points="190,90 210,100 190,110" fill="black"/>
+
+<rect x="250" y="50" width="100" height="100" fill="#ADD8E6"/>
+<text x="260" y="105" fill="black" font-family="Arial" font-size="14">Language (LLM)</text>
+
+<path d="M350 100 H400" stroke="black" stroke-width="2"/>
+<polygon points="390,90 410,100 390,110" fill="black"/>
+
+<rect x="450" y="50" width="100" height="100" fill="#90EE90"/>
+<text x="475" y="105" fill="black" font-family="Arial" font-size="14">Action</text>
+</svg>

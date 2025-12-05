@@ -1,0 +1,11 @@
+{
+  "friction_coefficients": {
+    "wood_on_wood": {"static": 0.5, "dynamic": 0.3},
+    "rubber_on_asphalt": {"static": 0.9, "dynamic": 0.7}
+  },
+  "gravity": [0.0, 0.0, -9.81],
+  "contact_parameters": {
+    "stiffness": 1e6,
+    "damping": 1e4
+  }
+}

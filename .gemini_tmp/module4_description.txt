@@ -1,0 +1,1 @@
+---title: Module 4 – Vision-Language-Action (VLA)sidebar_label: Module 4 – VLA & Capstone---# Module 4  **Vision-Language-Action**  Where LLMs Finally Control Physical Robots### DurationWeeks 11–13 + Capstone### The 2025 Revolution2025 is the year LLMs stopped chatting and started moving atoms.### You Will Build the Complete Pipeline     module 4

@@ -1,0 +1,28 @@
+# Sim-to-Real Transfer Recipes
+
+This chapter focuses on the critical problem of Sim-to-Real (S2R) transfer in robotics – how to successfully deploy policies or behaviors learned in simulation to physical robots. You will learn practical recipes and techniques to minimize the "reality gap" and ensure your AI models perform reliably in the real world.
+
+## The Reality Gap Revisited
+
+*   **Sources of Discrepancy**: Differences in physics, sensor noise, latency, and hardware characteristics between simulation and reality.
+*   **Impact on Performance**: Models trained in simulation often fail or degrade significantly when deployed to real robots.
+
+## Key Sim-to-Real Techniques
+
+*   **Domain Randomization (DR)**: (Brief recap) Randomizing simulation parameters during training to encourage robustness to real-world variations.
+*   **Domain Adaptation (DA)**: Techniques that explicitly adapt models from a source domain (sim) to a target domain (real) using unpaired data.
+    *   **Unsupervised Domain Adaptation**: Learning domain-invariant features.
+    *   **Generative Adversarial Networks (GANs)**: Bridging the gap in appearance.
+*   **System Identification**: More accurately modeling the physical properties of the real robot and environment in simulation.
+*   **Curriculum Learning**: Gradually increasing the complexity of the simulation environment during training.
+*   **Action Space and Observation Space Matching**: Ensuring consistency between sim and real interfaces.
+
+## Sim-to-Real Transfer for Humanoid Robots
+
+*   **Proprioceptive Data**: Matching joint angles, velocities, and torques.
+*   **Contact Dynamics**: Fine-tuning friction and contact parameters for walking/grasping.
+*   **Sensor Noise**: Accurately modeling real-world sensor imperfections.
+
+## Example: Transferring a Grasping Policy
+
+(Conceptual example demonstrating a pipeline for training a grasping policy in Isaac Sim using DR and then transferring it to a real robot with minimal performance degradation will go here.)

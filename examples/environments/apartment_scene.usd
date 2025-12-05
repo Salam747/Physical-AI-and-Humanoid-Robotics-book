@@ -1,0 +1,32 @@
+#usda 1.0
+(
+    defaultPrim = "ApartmentScene"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "ApartmentScene"
+{
+    reorder customData = ["assetInfo", "subcomponentRefs"]
+    assetInfo = {
+        assetIdentifier = @./apartment_scene.usd@
+        name = "ApartmentScene"
+        version = "1.0"
+    }
+    def "Walls"
+    {
+        # ... wall definitions ...
+    }
+    def "Floor"
+    {
+        # ... floor definitions (e.g., slippery kitchen tiles) ...
+    }
+    def "Furniture"
+    {
+        # ... furniture definitions ...
+    }
+    def "Lighting"
+    {
+        # ... lighting definitions ...
+    }
+}

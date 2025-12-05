@@ -1,0 +1,19 @@
+# Bridging External Python Agents to ROS 2 Controllers
+
+This chapter explores how to integrate external Python applications, including advanced AI agents like Large Language Models (LLMs), with your ROS 2 robot control system. You will learn to design communication interfaces that enable high-level decision-making processes to influence real-time robot behavior.
+
+## Why Bridge External Agents?
+
+*   **Advanced AI**: Integrating sophisticated AI algorithms (e.g., path planning, natural language understanding).
+*   **Modularity**: Decoupling complex decision-making from low-level control loops.
+*   **Flexibility**: Easily swapping out different AI components without altering core robot code.
+
+## Communication Patterns for Bridging
+
+*   **ROS 2 Topics**: Publishing high-level goals and subscribing to robot feedback.
+*   **ROS 2 Actions**: Implementing goal-based interactions for complex tasks (e.g., "move to kitchen", "pick up cup").
+*   **Custom ROS 2 Interfaces**: Defining messages and services specifically for agent-robot communication.
+
+## Example: LLM-driven Goal Setter
+
+(Example Python code demonstrating an external agent (potentially an LLM) publishing high-level goals to a ROS 2 action server will go here.)
