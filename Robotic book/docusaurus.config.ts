@@ -22,7 +22,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'yourusername', // Usually your GitHub org/user name.
+  organizationName: 'Salam747', // Usually your GitHub org/user name.
   projectName: 'physical-ai-humanoid-book', // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -81,13 +81,12 @@ const config: Config = {
             links: [
               {
                 title: 'Docs',
-                items: [
-                  {
-                    label: 'Tutorial',
-                    to: '/docs/intro',
-                  },
-                ],
-              },
+                          items: [
+                            {
+                              label: 'Module 1',
+                              to: '/docs/module1-ros2',
+                            },
+                          ],              },
             ],
       copyright: `Copyright © ${new Date().getFullYear()} Physical AI and Humanoid Robotics. Built with Docusaurus.`,
     },
