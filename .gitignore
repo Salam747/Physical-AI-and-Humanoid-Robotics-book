@@ -1,0 +1,21 @@
+# Node.js / Docusaurus
+node_modules/
+.docusaurus/
+build/
+.env
+.env.local
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Universal
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/

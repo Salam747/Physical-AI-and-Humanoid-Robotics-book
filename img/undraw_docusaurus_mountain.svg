@@ -1,0 +1,18 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="400" height="400" fill="#0A192F"/>
+<defs>
+<linearGradient id="grad_circuit" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" style="stop-color:#64FFDA;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#0A192F;stop-opacity:0" />
+</linearGradient>
+</defs>
+<g id="circuit-board">
+<path d="M50 50 L50 350 M100 50 L100 350 M150 50 L150 350 M200 50 L200 350 M250 50 L250 350 M300 50 L300 350 M350 50 L350 350" stroke="url(#grad_circuit)" stroke-width="2"/>
+<path d="M50 50 L350 50 M50 100 L350 100 M50 150 L350 150 M50 200 L350 200 M50 250 L350 250 M50 300 L350 300 M50 350 L350 350" stroke="url(#grad_circuit)" stroke-width="2"/>
+<circle cx="75" cy="75" r="4" fill="#64FFDA"/>
+<circle cx="125" cy="175" r="4" fill="#64FFDA"/>
+<circle cx="275" cy="125" r="4" fill="#64FFDA"/>
+<circle cx="225" cy="275" r="4" fill="#64FFDA"/>
+<path d="M75 75 L125 175 L275 125 L225 275" stroke="#64FFDA" stroke-width="1" stroke-dasharray="4 4"/>
+</g>
+</svg>
