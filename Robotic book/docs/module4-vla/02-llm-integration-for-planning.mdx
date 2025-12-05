@@ -1,0 +1,26 @@
+# LLM Integration for High-Level Planning
+
+This chapter explores how Large Language Models (LLMs) can be integrated into a Vision-Language-Action (VLA) pipeline to perform high-level task planning for robots. The focus is on translating abstract natural language commands into a sequence of executable robot actions.
+
+## Role of LLMs in Robotics Planning
+
+*   **Understanding Natural Language**: Interpreting user commands and extracting intents.
+*   **Task Decomposition**: Breaking down complex goals into smaller, manageable sub-tasks.
+*   **Common Sense Reasoning**: Leveraging LLM's vast knowledge for context-aware decision-making.
+*   **Adaptability**: Generating plans for novel situations not explicitly seen during training.
+
+## Architectures for LLM-driven Planning
+
+*   **Prompt Engineering**: Crafting effective prompts to guide LLM behavior.
+*   **Tool Use (Function Calling)**: Enabling LLMs to interact with external tools (e.g., motion planners, vision APIs).
+*   **Hierarchical Planning**: LLMs generate high-level plans, which are then refined by classical planners or lower-level controllers.
+
+## Integrating LLMs with ROS 2
+
+*   **ROS 2 Clients**: Developing Python nodes to communicate with LLM APIs.
+*   **Action Servers**: Exposing robot capabilities as ROS 2 Actions for LLM control.
+*   **Message Definitions**: Designing custom ROS 2 messages for LLM input/output.
+
+## Example: LLM-driven Object Retrieval
+
+(Example pseudo-code or Python script illustrating how an LLM might receive a command like "get me the apple from the table," decompose it, and call robot actions to achieve the goal will go here.)

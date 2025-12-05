@@ -1,0 +1,24 @@
+# Creating and Publishing Custom ROS 2 Messages
+
+This chapter guides you through the process of defining, building, and using custom message types in ROS 2. Custom messages are essential for exchanging domain-specific data between nodes in your robotics application.
+
+## Defining Custom Messages
+
+*   **Message Definition Files (`.msg`)**: Syntax and best practices for creating `.msg` files.
+*   **Data Types**: Understanding primitive types, arrays, and nested messages.
+*   **Header**: Including `std_msgs/msg/Header` for timestamped data.
+
+## Building Custom Message Packages
+
+*   **Package Structure**: Organizing your custom message definitions within a ROS 2 package.
+*   **`CMakeLists.txt` and `package.xml`**: Configuring the build system for custom messages.
+*   **`colcon build`**: Compiling your custom message package.
+
+## Publishing and Subscribing to Custom Messages
+
+*   **Python (`rclpy`) Examples**: Demonstrating how to publish and subscribe to your custom messages using `rclpy`.
+*   **C++ (`rclcpp`) Examples**: (Optional) Demonstrating custom message usage in C++.
+
+## Example: Custom Robot Status Message
+
+(Example code for defining, building, and using a custom robot status message will go here.)

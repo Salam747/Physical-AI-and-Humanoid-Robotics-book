@@ -1,0 +1,16 @@
+{
+  "lidar": {
+    "range_noise_std_dev": 0.01,
+    "angular_noise_std_dev": 0.001
+  },
+  "depth_camera": {
+    "depth_noise_std_dev": 0.005,
+    "ir_noise_std_dev": 0.002
+  },
+  "imu": {
+    "accelerometer_noise_density": 0.0001,
+    "gyroscope_noise_density": 0.00001,
+    "accelerometer_bias_stability": 0.001,
+    "gyroscope_bias_stability": 0.0001
+  }
+}

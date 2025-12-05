@@ -1,0 +1,28 @@
+# Nav2 Configuration for Unstable Bipedal Platforms
+
+This chapter addresses the challenges of configuring the ROS 2 Navigation Stack (Nav2) for bipedal robots. Unlike wheeled or tracked robots, bipedal platforms introduce significant complexities related to stability, balance, and dynamic motion. You will learn how to adapt Nav2's components to enable autonomous navigation for walking robots.
+
+## Challenges of Bipedal Navigation
+
+*   **Balance and Stability**: Maintaining upright posture during locomotion.
+*   **Dynamic Obstacle Avoidance**: Reacting to moving objects while walking.
+*   **Rough Terrain**: Adapting to uneven surfaces and stairs.
+*   **Footstep Planning**: Generating stable and efficient footholds.
+
+## Nav2 Overview
+
+*   **Modular Architecture**: Behavior Tree, Controller, Planner, and Costmap components.
+*   **Key Concepts**: Global and local planning, costmaps, localization.
+
+## Adapting Nav2 for Bipeds
+
+*   **Locomotion Controller Integration**: Replacing standard `cmd_vel` interfaces with walking pattern generators.
+*   **Costmap Configuration**:
+    *   **Footstep-based Costmaps**: Incorporating terrain traversability and foothold regions.
+    *   **Dynamic Obstacle Layer**: Enhancing detection and avoidance of moving entities.
+*   **Planner Selection**: Choosing or developing planners suitable for bipedal gait (e.g., footstep planners).
+*   **Localization**: Using IMU and vision data for robust pose estimation.
+
+## Example: Nav2 for a Humanoid Robot in a Simulated Apartment
+
+(Example Nav2 configuration files and launch scripts for a simulated humanoid robot navigating an apartment environment will go here.)

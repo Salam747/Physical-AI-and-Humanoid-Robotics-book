@@ -1,0 +1,22 @@
+{
+  "layout_name": "Humanoid Control Dashboard",
+  "panels": [
+    {
+      "type": "RobotView",
+      "position": [0, 0],
+      "size": [800, 600]
+    },
+    {
+      "type": "SensorDataDisplay",
+      "position": [800, 0],
+      "size": [400, 300],
+      "data_sources": ["LiDAR", "IMU"]
+    },
+    {
+      "type": "CommandInput",
+      "position": [800, 300],
+      "size": [400, 300],
+      "command_types": ["joint_control", "high_level_goals"]
+    }
+  ]
+}
