@@ -20,8 +20,8 @@ function HomepageHeader() {
         <div className={styles.buttons}>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/intro">
-            Docusaurus Tutorial - 5min ⏱️
+            to="/docs/module1-ros2/">
+            Start Reading - Module 1
           </Link>
         </div>
       </div>
@@ -33,8 +33,8 @@ export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      title={`${siteConfig.title}`}
+      description="The definitive guide to building intelligent, embodied robots using ROS 2, NVIDIA Isaac Sim, and LLMs.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
