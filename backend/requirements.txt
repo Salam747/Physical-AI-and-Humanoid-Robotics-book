@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+qdrant-client
+google-generativeai
+langchain-google-genai
+langchain-community
+langchain-core
+python-dotenv
+sqlalchemy
+psycopg2-binary
+sentence-transformers
+langchain-text-splitters
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
