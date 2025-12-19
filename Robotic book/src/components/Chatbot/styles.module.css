@@ -250,6 +250,27 @@
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+/* Loading Container */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.loadingText {
+  font-size: 0.85rem;
+  color: var(--ifm-color-primary);
+  font-style: italic;
+  opacity: 0.8;
+  animation: fadeInOut 2s infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
 /* Loading Dots Animation */
 .loadingDots {
   display: flex;
@@ -389,4 +410,43 @@
   .chatInputForm {
     padding: 12px;
   }
+}
+
+/* Welcome Message Styling */
+.welcomeHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--ifm-color-primary);
+}
+
+.botIcon {
+  font-size: 1.5rem;
+  animation: wave 2s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(14deg); }
+  50% { transform: rotate(0deg); }
+}
+
+.welcomeText {
+  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  color: var(--ifm-font-color-base);
+  opacity: 0.9;
+}
+
+.welcomePrompt {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ifm-color-primary);
+  opacity: 0.85;
 }

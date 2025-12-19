@@ -48,22 +48,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const storedToken = getAuthToken();
 
             if (storedToken && !isTokenExpired(storedToken)) {
-                const isValid = await verifyTokenWithBackend(storedToken);
-                if (isValid) {
-                    setToken(storedToken);
-                    const userData = decodeToken(storedToken);
-                    setUser({
-                        id: parseInt(userData.sub),
-                        first_name: userData.first_name,
-                        last_name: userData.last_name,
-                        email: userData.email
-                    });
-                } else {
-                    removeAuthToken();
-                }
-            }
+                // Immediately set user from token (optimistic update)
+                const userData = decodeToken(storedToken);
+                setToken(storedToken);
+                setUser({
+                    id: parseInt(userData.sub),
+                    first_name: userData.first_name,
+                    last_name: userData.last_name,
+                    email: userData.email
+                });
+                setLoading(false);
 
-            setLoading(false);
+                // Verify in background
+                verifyTokenWithBackend(storedToken).then((isValid) => {
+                    if (!isValid) {
+                        // If verification fails, clear everything
+                        removeAuthToken();
+                        setToken(null);
+                        setUser(null);
+                    }
+                });
+            } else {
+                setLoading(false);
+            }
         };
 
         initAuth();
@@ -130,7 +137,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 saveAuthToken(result.token);
                 setToken(result.token);
                 setUser(result.user);
-                window.location.href = '/chatbot';
+                // Don't redirect here - let the form component handle it
+                // Yahan redirect mat karo - form component handle karega
             } else {
                 throw new Error(result.message || 'Signup failed');
             }
@@ -163,7 +171,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 saveAuthToken(result.token);
                 setToken(result.token);
                 setUser(result.user);
-                window.location.href = '/chatbot';
+                // Don't redirect here - let the form component handle it
+                // Yahan redirect mat karo - form component handle karega
             } else {
                 throw new Error(result.message || 'Login failed');
             }
@@ -179,7 +188,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         removeAuthToken();
         setToken(null);
         setUser(null);
-        window.location.href = '/login';
+        window.location.href = '/';
     };
 
     const value: AuthContextType = {

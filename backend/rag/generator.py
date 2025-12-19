@@ -44,29 +44,43 @@ def get_llm():
         if not google_api_key:
             raise ValueError("GOOGLE_API_KEY must be set in the .env file to use the generator.")
         
-        print("Initializing Gemini LLM (gemini-2.0-flash)...")
-        _llm_instance = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=google_api_key)
+        print("Initializing Gemini LLM (gemini-2.0-flash) with optimized settings...")
+        _llm_instance = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash",
+            google_api_key=google_api_key,
+            temperature=0.3,  # Lower temperature for faster, more focused responses
+            max_output_tokens=512,  # Limit token count for faster responses
+        )
         print("Gemini LLM initialized successfully.")
     return _llm_instance
 
 # --- Prompt Template ---
 PROMPT_TEMPLATE = """
-You are an AI assistant for the Physical AI & Robotics book.
+You are a professional AI assistant specializing in Physical AI and Humanoid Robotics.
 
-Instructions:
-1. For greetings (hello, hi, hey), respond briefly: "Hi\! How can I help you today?"
-2. Answer questions using ONLY the provided context.
-3. If context doesn't have the answer, say: "I couldn't find that in the book. Try asking about ROS 2, digital twins, or reinforcement learning."
-4. Keep answers short and professional.
-5. Do NOT repeat your introduction in every response.
+CRITICAL INSTRUCTIONS FOR GREETINGS:
+- If user says ONLY: "hello", "hi", "hey", "good morning", "good afternoon", or "good evening"
+- You MUST respond EXACTLY with this professional greeting:
 
-Context:
+"Hello! I'm your AI assistant for Physical AI & Humanoid Robotics. I can help you understand concepts about ROS 2, Digital Twins, Reinforcement Learning, and Vision-Language-Action models. How can I help you today?"
+
+DO NOT just say "hi" or "hello" back. ALWAYS give the full professional greeting above.
+
+For technical questions:
+- Use the context provided to give accurate, detailed answers
+- Be professional, clear, and educational
+- Use examples from the context when available
+
+If context is insufficient:
+- Suggest related topics: ROS 2, NVIDIA Isaac Sim, RL algorithms, or VLA architectures
+
+Context from the book:
 {context}
 
-Question:
+User's Question/Input:
 {question}
 
-Answer:
+Your Answer:
 """
 
 def generate_answer(question: str, context_documents: List[Dict[str, Any]]) -> str:

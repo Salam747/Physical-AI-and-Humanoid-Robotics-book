@@ -1,0 +1,66 @@
+/* Custom Navbar Fixes */
+
+/* Hide hamburger menu on desktop - 3 lines before logo */
+@media (min-width: 997px) {
+    button[class*="toggle_"][class*="toggle"] {
+        display: none !important;
+    }
+
+    .navbar__toggle {
+        display: none !important;
+    }
+
+    button[aria-label*="Navigation"] {
+        display: none !important;
+    }
+}
+
+/* Custom Navbar Fixes */
+
+/* Push auth section to far right */
+.navbar__items--right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Remove right items from left */
+.navbar__items:not(.navbar__items--right) {
+    flex: 1;
+}
+
+/* Dark/Light Mode Icon Size - LARGER */
+.navbar__item svg,
+button[class*="toggle"] svg,
+button[class*="colorModeToggle"] svg {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+}
+
+/* Color mode toggle button padding */
+button[class*="toggle"],
+button[class*="colorModeToggle"] {
+    padding: 0.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Ensure auth section stays at the end */
+.navbar__items--right > div:last-child {
+    margin-left: auto;
+}
+
+/* Better spacing for all navbar items */
+.navbar__item {
+    padding: 0.25rem 0.5rem;
+}
+
+/* Dark mode specific adjustments */
+[data-theme='dark'] .navbar__item svg,
+[data-theme='dark'] button[class*="toggle"] svg {
+    width: 28px !important;
+    height: 28px !important;
+}

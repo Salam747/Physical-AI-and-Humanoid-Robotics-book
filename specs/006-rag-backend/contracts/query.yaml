@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: Query Endpoint
+  version: 1.0.0
+  description: Submits a natural language question about the book, with an optional selected_text override, and receives an AI-generated answer.
+paths:
+  /query:
+    post:
+      summary: Get AI-generated answer for a question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: The natural language question about the book.
+                  example: What is ROS 2?
+                selected_text:
+                  type: string
+                  nullable: true
+                  description: Optional specific text provided by the user for context.
+                  example: ROS 2 is middleware
+              required:
+                - question
+      responses:
+        '200':
+          description: Successful response with the AI-generated answer.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The AI-generated response.
+                    example: ROS 2 is a flexible framework for writing robot software.
+                  source_chunks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Unique identifier for the chunk.
+                        text_content:
+                          type: string
+                          description: The actual text segment used.
+                        metadata:
+                          type: object
+                          description: Metadata of the source chunk.
+                    description: References to the BookChunks used to generate the answer.
+        '400':
+          description: Bad request, e.g., invalid input format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Invalid input provided.
+        '500':
+          description: Internal Server Error, e.g., missing API key, rate limits.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Missing Gemini API Key.

@@ -9,10 +9,44 @@
 # 4. We give the question and the found text to Gemini to get a final answer using `generator.py`. (Hum sawal aur mila hua text Gemini ko dekar `generator.py` ke zariye final jawab hasil karte hain).
 
 from typing import List, Dict, Any, Optional
+import hashlib
+import time
 
 from rag.retriever import retrieve_relevant_chunks # Updated import
 from rag.generator import generate_answer
 from utils.embeddings import get_gemini_embedding # Updated import
+
+# Simple in-memory cache with TTL (Time To Live)
+_response_cache: Dict[str, Dict[str, Any]] = {}
+CACHE_TTL = 3600  # 1 hour in seconds
+
+def get_cache_key(question: str) -> str:
+    """Generate a cache key from the question"""
+    return hashlib.md5(question.lower().strip().encode()).hexdigest()
+
+def get_cached_response(question: str) -> Optional[Dict[str, Any]]:
+    """Get cached response if it exists and is not expired"""
+    cache_key = get_cache_key(question)
+    if cache_key in _response_cache:
+        cached = _response_cache[cache_key]
+        if time.time() - cached['timestamp'] < CACHE_TTL:
+            print(f"✓ Cache HIT for question: '{question[:50]}...'")
+            return cached['response']
+        else:
+            # Remove expired cache entry
+            print(f"✗ Cache EXPIRED for question: '{question[:50]}...'")
+            del _response_cache[cache_key]
+    print(f"✗ Cache MISS for question: '{question[:50]}...'")
+    return None
+
+def set_cached_response(question: str, response: Dict[str, Any]):
+    """Cache the response with timestamp"""
+    cache_key = get_cache_key(question)
+    _response_cache[cache_key] = {
+        'response': response,
+        'timestamp': time.time()
+    }
+    print(f"Cached response for: '{question[:50]}...'")
 
 def query_rag_pipeline(question: str, selected_text: Optional[str] = None) -> Dict[str, Any]:
     """
@@ -28,7 +62,13 @@ def query_rag_pipeline(question: str, selected_text: Optional[str] = None) -> Di
                         (Ek dictionary jismein final jawab aur source chunks shamil hain)
     """
     print("--- Starting RAG Pipeline ---")
-    
+
+    # Check cache first (only for regular queries, not selected text)
+    if not selected_text:
+        cached_result = get_cached_response(question)
+        if cached_result:
+            return cached_result
+
     context_for_generation: List[Dict[str, Any]] = []
     response_source_chunks: List[Dict[str, Any]] = []
     final_answer: str = ""
@@ -51,13 +91,19 @@ def query_rag_pipeline(question: str, selected_text: Optional[str] = None) -> Di
         # No need to generate embedding here; retriever handles it
         print(f"Retrieving documents from Qdrant for question: '{question}'")
         retrieved_chunks = retrieve_relevant_chunks(question)
-        
+
         if not retrieved_chunks:
-            print("No relevant chunks found in Qdrant for this query.")
-            final_answer = "Sorry, I couldn't find any relevant information in the book to answer this question."
+            print("⚠️ WARNING: No relevant chunks found in Qdrant for this query.")
+            print("   This might mean:")
+            print("   1. The score_threshold is too high")
+            print("   2. The data is not ingested properly in Qdrant")
+            print("   3. The question doesn't match any content in the book")
+            final_answer = "Sorry, I couldn't find any relevant information in the book to answer this question. Please try rephrasing your question or ask about ROS 2, Digital Twins, Reinforcement Learning, or Vision-Language-Action models."
             return {"answer": final_answer, "source_chunks": []}
-        
-        print(f"Found {len(retrieved_chunks)} relevant documents.")
+
+        print(f"✓ Found {len(retrieved_chunks)} relevant documents from Qdrant")
+        for i, chunk in enumerate(retrieved_chunks):
+            print(f"  Chunk {i+1}: {chunk.get('metadata', {}).get('source_file', 'unknown')}")
         context_for_generation = retrieved_chunks
         response_source_chunks = retrieved_chunks # For API response
 
@@ -67,8 +113,14 @@ def query_rag_pipeline(question: str, selected_text: Optional[str] = None) -> Di
     print("Generating final answer with Gemini...")
     final_answer = generate_answer(question, context_for_generation)
     print("--- RAG Pipeline Finished ---")
-    
-    return {"answer": final_answer, "source_chunks": response_source_chunks}
+
+    result = {"answer": final_answer, "source_chunks": response_source_chunks}
+
+    # Cache the result (only for regular queries, not selected text)
+    if not selected_text:
+        set_cached_response(question, result)
+
+    return result
 
 # Example Usage
 if __name__ == '__main__':

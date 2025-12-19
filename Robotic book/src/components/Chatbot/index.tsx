@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import styles from './styles.module.css';
-import { getAuthToken } from '@site/src/utils/auth';
+import { getAuthToken, API_URL } from '@site/src/utils/auth';
 import AuthModal from '@site/src/components/Auth/AuthModal';
-
-const API_URL = 'http://127.0.0.1:8000'; // Backend URL
 
 // Check if user is authenticated
 const isUserAuthenticated = () => {
@@ -85,10 +83,22 @@ function Chatbot() {
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage = { sender: 'user', text: inputValue };
-    const currentQuestion = inputValue;
+    const currentQuestion = inputValue.trim().toLowerCase();
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInputValue('');
     setIsLoading(true);
+
+    // Check if it's a simple greeting - respond instantly without API call
+    const greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings'];
+    if (greetings.includes(currentQuestion)) {
+      setIsLoading(false);
+      const greetingResponse = {
+        sender: 'bot',
+        text: "Hello! I'm your AI assistant for Physical AI & Humanoid Robotics. I can help you understand concepts about ROS 2, Digital Twins, Reinforcement Learning, and Vision-Language-Action models. How can I help you today?"
+      };
+      setMessages((prevMessages) => [...prevMessages, greetingResponse]);
+      return;
+    }
 
     try {
       const token = getAuthToken();
@@ -183,7 +193,14 @@ function Chatbot() {
           <div className={styles.chatMessages}>
             {messages.length === 0 && (
               <div className={clsx(styles.message, styles.bot)}>
-                👋 Hi! I'm your AI assistant for Physical AI and Humanoid Robotics. Ask me anything about the book content!
+                <div className={styles.welcomeHeader}>
+                  <span className={styles.botIcon}>🤖</span>
+                  <strong>AI Assistant</strong>
+                </div>
+                <p className={styles.welcomeText}>
+                  Hello! I specialize in Physical AI & Humanoid Robotics. Ask me about ROS 2, Digital Twins, Reinforcement Learning, or Vision-Language-Action models.
+                </p>
+                <p className={styles.welcomePrompt}>How can I help you today?</p>
               </div>
             )}
             {messages.map((message, index) => (
@@ -193,8 +210,11 @@ function Chatbot() {
             ))}
             {isLoading && (
               <div className={clsx(styles.message, styles.bot)}>
-                <div className={styles.loadingDots}>
-                  <span></span><span></span><span></span>
+                <div className={styles.loadingContainer}>
+                  <div className={styles.loadingDots}>
+                    <span></span><span></span><span></span>
+                  </div>
+                  <span className={styles.loadingText}>Searching knowledge base...</span>
                 </div>
               </div>
             )}

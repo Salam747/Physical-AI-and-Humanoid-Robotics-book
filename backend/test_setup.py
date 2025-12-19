@@ -161,8 +161,17 @@ def test_gemini_api():
             return False
 
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content("Say 'OK' if you can read this.")
+        # Try different model names
+        model_names = ['gemini-pro', 'gemini-1.5-pro', 'gemini-1.0-pro']
+        response = None
+        for model_name in model_names:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content("Say 'OK' if you can read this.")
+                if response and response.text:
+                    break
+            except:
+                continue
 
         if response and response.text:
             print_status("Gemini API Connection", "OK")

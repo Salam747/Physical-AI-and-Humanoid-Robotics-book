@@ -40,8 +40,7 @@ class SignupRequest(BaseModel):
             raise ValueError('Password must contain at least one lowercase letter')
         if not re.search(r'[0-9]', v):
             raise ValueError('Password must contain at least one number')
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
-            raise ValueError('Password must contain at least one special character')
+        # Special character requirement removed
         return v
 
     def model_post_init(self, __context) -> None:

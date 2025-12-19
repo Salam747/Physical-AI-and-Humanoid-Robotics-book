@@ -12,14 +12,19 @@ import styles from './login.module.css';
 
 export default function LoginPage(): JSX.Element {
     const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
+    const [showSuccess, setShowSuccess] = useState(false);
     const { isAuthenticated, loading } = useAuth();
 
-    // Redirect to chatbot if already authenticated
+    // Redirect to homepage if already authenticated
     useEffect(() => {
-        if (!loading && isAuthenticated) {
-            window.location.href = '/chatbot';
+        if (!loading && isAuthenticated && !showSuccess) {
+            setShowSuccess(true);
+            // Smooth transition with success message
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1200);
         }
-    }, [isAuthenticated, loading]);
+    }, [isAuthenticated, loading, showSuccess]);
 
     if (loading) {
         return (
@@ -27,6 +32,25 @@ export default function LoginPage(): JSX.Element {
                 <div className={styles.loadingContainer}>
                     <div className={styles.spinner}></div>
                     <p>Loading...</p>
+                </div>
+            </Layout>
+        );
+    }
+
+    // Show success message when authenticated
+    if (showSuccess) {
+        return (
+            <Layout title="Login">
+                <div className={styles.authContainer}>
+                    <div className={styles.authCard}>
+                        <div className={styles.successAnimation}>
+                            <div className={styles.successIcon}>✓</div>
+                            <h2 className={styles.successTitle}>
+                                {activeTab === 'signup' ? 'Account Created Successfully!' : 'Login Successful!'}
+                            </h2>
+                            <p className={styles.successMessage}>Opening chatbot...</p>
+                        </div>
+                    </div>
                 </div>
             </Layout>
         );

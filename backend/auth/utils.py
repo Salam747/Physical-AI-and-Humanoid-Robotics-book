@@ -118,3 +118,59 @@ def get_user_from_token(token: str) -> dict:
     }
 
     return user_data if all(user_data.values()) else None
+
+
+# Dependency for FastAPI routes to get current user
+from fastapi import Depends, HTTPException, Header
+from sqlalchemy.orm import Session
+from typing import Optional
+
+
+def get_current_user(
+    authorization: Optional[str] = Header(None),
+    db: Session = Depends(None)  # Will be replaced with actual get_db in routes
+):
+    """
+    FastAPI dependency to get current authenticated user from Authorization header.
+    Authorization header se current authenticated user hasil karne ke liye FastAPI dependency.
+
+    Args:
+        authorization: Authorization header value
+        db: Database session
+
+    Returns:
+        User object from database
+
+    Raises:
+        HTTPException: If token is invalid or user not found
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authorization header missing or invalid")
+
+    token = authorization.replace("Bearer ", "")
+    user_data = get_user_from_token(token)
+
+    if not user_data:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    # Import here to avoid circular dependency
+    from db.models import User, get_db
+
+    # Get db session if not provided
+    if db is None:
+        db_gen = get_db()
+        db = next(db_gen)
+        try:
+            user = db.query(User).filter(User.id == user_data["id"]).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+            return user
+        finally:
+            db.close()
+    else:
+        user = db.query(User).filter(User.id == user_data["id"]).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+
+
