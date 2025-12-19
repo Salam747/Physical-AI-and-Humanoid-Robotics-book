@@ -3,7 +3,7 @@
 ## Overview
 This guide will help you deploy:
 1. **Frontend** → GitHub Pages (Already done)
-2. **Backend** → Vercel (New deployment)
+2. **Backend** → Render (Free deployment)
 
 ---
 
@@ -27,42 +27,43 @@ Robotic book/build/
 ```
 
 ### 1.2 Files Ready for Deployment
-✅ `backend/vercel.json` - Created
-✅ `backend/.vercelignore` - Created
+✅ `render.yaml` - Created
+✅ `backend/.env.example` - Environment template
 ✅ `Robotic book/src/utils/auth.ts` - API URL configured
 ✅ `backend/app.py` - CORS configured
 
 ---
 
-## Part 2: Deploy Backend to Vercel
+## Part 2: Deploy Backend to Render
 
-### Step 1: Create Vercel Account
-1. Go to https://vercel.com
-2. Click "Sign Up"
+### Step 1: Create Render Account
+1. Go to https://render.com
+2. Click "Get Started for Free"
 3. Sign up with GitHub (easiest option)
-4. Authorize Vercel to access your GitHub
+4. Authorize Render to access your GitHub
 
-### Step 2: Import Your Project
-1. Click "Add New" → "Project"
-2. Select "Import Git Repository"
-3. Find your repository: `Physical-AI-and-Humanoid-Robotics-book`
-4. Click "Import"
+### Step 2: Create New Web Service
+1. Click "New" → "Web Service"
+2. Connect your GitHub repository: `Physical-AI-and-Humanoid-Robotics-book`
+3. Select the repository
+4. Click "Connect"
 
 ### Step 3: Configure Build Settings
 
-**IMPORTANT:** Vercel ko batana hai ke backend folder use karna hai
-
 ```
+Name: physical-ai-backend
+Region: Singapore (or closest to you)
+Branch: 006-rag-backend
 Root Directory: backend
-Framework Preset: Other
-Build Command: (leave empty)
-Output Directory: (leave empty)
-Install Command: pip install -r requirements.txt
+Runtime: Python 3
+Build Command: pip install -r requirements.txt
+Start Command: gunicorn app:app --bind 0.0.0.0:$PORT
+Instance Type: Free
 ```
 
 ### Step 4: Add Environment Variables
 
-Click "Environment Variables" and add these:
+Click "Environment" and add these:
 
 | Variable Name | Value | Where to Get |
 |---------------|-------|--------------|
@@ -72,23 +73,24 @@ Click "Environment Variables" and add these:
 | `DATABASE_URL` | Your Neon Postgres URL | From your `.env` file |
 | `SECRET_KEY` | Your JWT secret | From your `.env` file |
 | `ENVIRONMENT` | `production` | Type manually |
+| `ALLOWED_ORIGINS` | `https://salam747.github.io` | Your GitHub Pages URL |
 
 **How to add:**
-1. Click "Add" for each variable
-2. Paste the value from your `.env` file
-3. Click "Add" to confirm
+1. Click "Add Environment Variable"
+2. Enter key and value
+3. Click "Save"
 
 ### Step 5: Deploy
-1. Click "Deploy"
-2. Wait 2-3 minutes for build
-3. You'll get a URL like: `https://your-project-name.vercel.app`
+1. Click "Create Web Service"
+2. Wait 3-5 minutes for build
+3. You'll get a URL like: `https://physical-ai-backend.onrender.com`
 
 ---
 
 ## Part 3: Update Frontend with Backend URL
 
-### Step 1: Get Your Vercel Backend URL
-After deployment, copy your Vercel URL (e.g., `https://physical-ai-backend.vercel.app`)
+### Step 1: Get Your Render Backend URL
+After deployment, copy your Render URL (e.g., `https://physical-ai-backend.onrender.com`)
 
 ### Step 2: Update Frontend Code
 
@@ -96,26 +98,19 @@ Open `Robotic book/src/utils/auth.ts` and update line 10:
 
 ```typescript
 export const API_URL = process.env.NODE_ENV === 'production'
-    ? 'https://YOUR-VERCEL-URL.vercel.app'  // ← Update this
+    ? 'https://your-backend.onrender.com'  // ← Update this
     : 'http://127.0.0.1:8000';
 ```
 
-Replace `YOUR-VERCEL-URL` with your actual Vercel URL.
+Replace with your actual Render URL.
 
-### Step 3: Update Vercel CORS Settings
-
-Add your GitHub Pages URL to Vercel environment variables:
-
+### Step 3: Update CORS Settings
+Your `ALLOWED_ORIGINS` environment variable in Render should already include your GitHub Pages URL:
 ```
-Variable: ALLOWED_ORIGINS
-Value: https://salam747.github.io
+https://salam747.github.io
 ```
 
-### Step 4: Redeploy Vercel Backend
-After adding `ALLOWED_ORIGINS`:
-1. Go to Vercel dashboard
-2. Click "Deployments"
-3. Click "Redeploy" on latest deployment
+If you need to add more origins, separate them with commas in Render dashboard.
 
 ---
 
@@ -125,7 +120,7 @@ After adding `ALLOWED_ORIGINS`:
 ```bash
 cd "D:\Q4-assignments\Physical_AI_and_Humanoid_Robotics_book"
 git add .
-git commit -m "feat: Add backend deployment configuration and update API URLs"
+git commit -m "feat: Configure Render deployment for backend"
 ```
 
 ### Step 2: Push to GitHub
@@ -144,7 +139,7 @@ npm run deploy
 ## Part 5: Test Everything
 
 ### Test 1: Backend Health Check
-Visit: `https://YOUR-VERCEL-URL.vercel.app/health`
+Visit: `https://your-backend.onrender.com/health`
 
 Expected response:
 ```json
@@ -169,21 +164,23 @@ Expected response:
 ### Problem: "Failed to fetch" error in chatbot
 
 **Solution:**
-1. Check Vercel backend is running: Visit `/health` endpoint
-2. Check CORS is configured correctly
+1. Check Render backend is running: Visit `/health` endpoint
+2. Check CORS is configured correctly in environment variables
 3. Check browser console for exact error
+4. Note: Render free tier may sleep after 15 minutes of inactivity (first request takes ~30 seconds to wake up)
 
 ### Problem: Backend deployment failed
 
 **Solution:**
 1. Check `requirements.txt` has all dependencies
 2. Check Python version (should be 3.11)
-3. Check Vercel logs for error details
+3. Check Render logs for error details
+4. Verify all environment variables are set
 
 ### Problem: Authentication not working
 
 **Solution:**
-1. Check `SECRET_KEY` is set in Vercel
+1. Check `SECRET_KEY` is set in Render
 2. Check `DATABASE_URL` is correct
 3. Check Neon Postgres database is accessible
 
@@ -191,7 +188,7 @@ Expected response:
 
 **Solution:**
 1. You need to ingest data first
-2. Visit: `https://YOUR-VERCEL-URL.vercel.app/ingest`
+2. Visit: `https://your-backend.onrender.com/ingest`
 3. Wait for ingestion to complete
 4. This loads book content into Qdrant
 
@@ -199,10 +196,10 @@ Expected response:
 
 ## Important Notes
 
-### ⚠️ First-Time Setup on Vercel
+### ⚠️ First-Time Setup on Render
 After deployment, run the ingestion endpoint ONCE:
 ```
-POST https://YOUR-VERCEL-URL.vercel.app/ingest
+POST https://your-backend.onrender.com/ingest
 ```
 
 This loads all book content into Qdrant.
@@ -210,13 +207,16 @@ This loads all book content into Qdrant.
 ### 🔒 Security
 - Never commit `.env` file to GitHub
 - Keep your API keys secret
-- Use Vercel environment variables for production
+- Use Render environment variables for production
 
 ### 💰 Free Tier Limits
-- **Vercel:** 100GB bandwidth/month (plenty for your use)
+- **Render:** Free web service with 750 hours/month (sleeps after 15 min inactivity)
 - **Qdrant:** Free tier available
 - **Neon:** Free tier: 10GB storage
 - **Gemini:** Free tier: 60 requests/minute
+
+### ⏰ Render Free Tier Sleep
+Free services sleep after 15 minutes of inactivity. First request after sleep takes ~30 seconds to wake up.
 
 ---
 
@@ -261,17 +261,17 @@ git push origin 006-rag-backend
 
 1. ✅ Test all features on production
 2. ✅ Share the live URL with others
-3. ✅ Monitor Vercel logs for errors
+3. ✅ Monitor Render logs for errors
 4. ✅ Update README with live URL
 
 ---
 
 ## Support URLs
 
-- **Vercel Dashboard:** https://vercel.com/dashboard
+- **Render Dashboard:** https://dashboard.render.com
 - **GitHub Repository:** https://github.com/Salam747/Physical-AI-and-Humanoid-Robotics-book
 - **Live Frontend:** https://salam747.github.io/Physical-AI-and-Humanoid-Robotics-book/
-- **Backend API:** https://YOUR-PROJECT.vercel.app
+- **Backend API:** https://your-backend.onrender.com
 
 ---
 

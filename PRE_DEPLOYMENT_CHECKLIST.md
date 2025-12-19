@@ -36,12 +36,12 @@ Your `.gitignore` already includes:
 
 **BEFORE deployment:** Placeholder URL
 ```typescript
-? 'https://your-vercel-backend.vercel.app'
+? 'https://your-backend.onrender.com'
 ```
 
-**AFTER you deploy backend to Vercel:** Real URL
+**AFTER you deploy backend to Render:** Real URL
 ```typescript
-? 'https://physical-ai-rag.vercel.app'  // Your actual Vercel URL
+? 'https://physical-ai-backend.onrender.com'  // Your actual Render URL
 ```
 
 ⚠️ **Important:** You'll update this AFTER deploying backend, then redeploy frontend.
@@ -52,9 +52,9 @@ Your `.gitignore` already includes:
 
 #### Backend Files ✅
 - `backend/app.py` - CORS configured
-- `backend/vercel.json` - Vercel config
-- `backend/.vercelignore` - Ignore unnecessary files
-- `backend/requirements.txt` - Dependencies
+- `render.yaml` - Render config
+- `backend/.env.example` - Environment template
+- `backend/requirements.txt` - Dependencies with gunicorn
 - `backend/.env` - **NOT pushed to GitHub** (stays local)
 
 #### Frontend Files ✅
@@ -63,7 +63,7 @@ Your `.gitignore` already includes:
 
 ---
 
-### 5. Environment Variables to Add in Vercel
+### 5. Environment Variables to Add in Render
 
 From your `.env` file, copy these values:
 
@@ -75,6 +75,7 @@ From your `.env` file, copy these values:
 | `DATABASE_URL` | Your `.env` |
 | `SECRET_KEY` | Your `.env` |
 | `ENVIRONMENT` | Type: `production` |
+| `ALLOWED_ORIGINS` | `https://salam747.github.io` |
 
 ---
 
@@ -95,23 +96,24 @@ git checkout 006-rag-backend
 ## Deployment Steps (Quick Reference)
 
 ### Step 1: Deploy Backend First
-1. Go to https://vercel.com
+1. Go to https://render.com
 2. Sign in with GitHub
-3. Import your repository
-4. Set Root Directory: `backend`
-5. Add environment variables
-6. Deploy
-7. Copy your Vercel URL
+3. Create new Web Service
+4. Select your repository
+5. Set Root Directory: `backend`
+6. Add environment variables
+7. Deploy
+8. Copy your Render URL
 
 ### Step 2: Update Frontend with Backend URL
 1. Edit `Robotic book/src/utils/auth.ts`
-2. Replace placeholder with real Vercel URL
+2. Replace placeholder with real Render URL
 3. Commit changes
 
 ### Step 3: Push & Deploy Frontend
 ```bash
 git add .
-git commit -m "feat: Add backend deployment and connect frontend to Vercel API"
+git commit -m "feat: Configure Render deployment for backend"
 git push origin 006-rag-backend
 cd "Robotic book"
 npm run deploy
@@ -135,9 +137,9 @@ npm start
 # Visit: http://localhost:3001
 ```
 
-### Test After Vercel Deployment
+### Test After Render Deployment
 ```
-https://YOUR-VERCEL-URL.vercel.app/health
+https://your-backend.onrender.com/health
 ```
 
 Should return:
@@ -149,9 +151,9 @@ Should return:
 
 ## Final Checks Before Going Live
 
-- [ ] Backend deployed to Vercel successfully
-- [ ] Environment variables added in Vercel
-- [ ] Frontend updated with real Vercel URL
+- [ ] Backend deployed to Render successfully
+- [ ] Environment variables added in Render
+- [ ] Frontend updated with real Render URL
 - [ ] CORS includes GitHub Pages URL
 - [ ] All tests passing locally
 - [ ] No `.env` file in git status
@@ -172,10 +174,11 @@ npm run deploy
 ```
 
 ### Rollback Backend
-1. Go to Vercel dashboard
-2. Click "Deployments"
-3. Find previous working deployment
-4. Click "..." → "Promote to Production"
+1. Go to Render dashboard
+2. Click your service
+3. Go to "Events" tab
+4. Find previous working deployment
+5. Click "Rollback to this version"
 
 ---
 
