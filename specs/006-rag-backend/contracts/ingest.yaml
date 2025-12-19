@@ -1,0 +1,53 @@
+openapi: 3.0.0
+info:
+  title: Ingest Endpoint
+  version: 1.0.0
+  description: Triggers the ingestion process of book content from /docs into Qdrant and Neon.
+paths:
+  /ingest:
+    post:
+      summary: Trigger book content ingestion
+      requestBody:
+        # Optional request body to, for example, force re-ingestion
+        # Example: {"force_reingest": true}
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                force_reingest:
+                  type: boolean
+                  description: If true, clears existing data and re-ingests all content.
+                  default: false
+      responses:
+        '202':
+          description: Ingestion process initiated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ingestion process started.
+        '200':
+          description: Ingestion completed synchronously (for smaller datasets).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ingestion completed successfully.
+        '500':
+          description: Internal Server Error during ingestion.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    example: Error during book content ingestion.

@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Physical AI and Humanoid Robotics',
   tagline: 'The definitive guide to building intelligent, embodied robots',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -15,15 +15,18 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://yourusername.github.io',
+  url: process.env.NODE_ENV === 'production' ? 'https://Salam747.github.io' : 'http://localhost:3000',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/physical-ai-humanoid-book/',
+  baseUrl: process.env.NODE_ENV === 'production' ? '/Physical-AI-and-Humanoid-Robotics-book/' : '/',
+  trailingSlash: false,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'yourusername', // Usually your GitHub org/user name.
-  projectName: 'physical-ai-humanoid-book', // Usually your repo name.
+  organizationName: 'Salam747', // Usually your GitHub org/user name.
+  projectName: 'Physical-AI-and-Humanoid-Robotics-book', // Usually your repo name.
+  deploymentBranch: 'gh-pages', // The branch your site is deployed from.
+  githubHost: 'github.com',
 
   onBrokenLinks: 'throw',
 
@@ -73,23 +76,51 @@ const config: Config = {
           position: 'left',
           label: 'Book',
         },
-       
+        {
+          to: '/login',
+          label: 'Login',
+          position: 'right',
+        },
       ],
     },
     footer: {
       style: 'dark',
-            links: [
-              {
-                title: 'Docs',
-                items: [
-                  {
-                    label: 'Tutorial',
-                    to: '/docs/intro',
-                  },
-                ],
-              },
-            ],
-      copyright: `Copyright © ${new Date().getFullYear()} Physical AI and Humanoid Robotics. Built with Docusaurus.`,
+      links: [
+        {
+          title: 'Modules',
+          items: [
+            { label: 'ROS 2 Fundamentals', to: '/docs/module1-ros2/' },
+            { label: 'Digital Twin', to: '/docs/module2-digital-twin/' },
+            { label: 'Reinforcement Learning', to: '/docs/module3-ai-brain/' },
+            { label: 'VLA Pipeline', to: '/docs/module4-vla/' },
+          ],
+        },
+        {
+          title: 'Resources',
+          items: [
+            { label: 'Getting Started', to: '/docs/module1-ros2/' },
+            { label: 'GitHub Repository', href: 'https://github.com/Salam747/Physical-AI-and-Humanoid-Robotics-book' },
+            { label: 'Report Issues', href: 'https://github.com/Salam747/Physical-AI-and-Humanoid-Robotics-book/issues' },
+          ],
+        },
+        {
+          title: 'Technologies',
+          items: [
+            { label: 'ROS 2', href: 'https://docs.ros.org/en/humble/' },
+            { label: 'NVIDIA Isaac Sim', href: 'https://developer.nvidia.com/isaac-sim' },
+            { label: 'Google Gemini', href: 'https://ai.google.dev/' },
+            { label: 'Qdrant', href: 'https://qdrant.tech/' },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            { label: 'GitHub', href: 'https://github.com/Salam747/Physical-AI-and-Humanoid-Robotics-book' },
+            { label: 'Contribute', href: 'https://github.com/Salam747/Physical-AI-and-Humanoid-Robotics-book/pulls' },
+          ],
+        },
+      ],
+      copyright: `Copyright � ${new Date().getFullYear()} Physical AI and Humanoid Robotics. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
