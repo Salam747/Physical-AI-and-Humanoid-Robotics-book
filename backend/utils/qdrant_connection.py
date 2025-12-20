@@ -2,6 +2,9 @@ import os
 from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 
+# Load environment variables
+load_dotenv()
+
 # Global Qdrant client instance to avoid re-initialization
 _qdrant_client = None
 
@@ -24,10 +27,11 @@ def get_qdrant_client() -> QdrantClient:
             raise ValueError("QDRANT_URL environment variable not set.")
             # QDRANT_URL environment variable set nahi hai.
 
-        # Initialize Qdrant client
+        # Initialize Qdrant client with timeout settings
         _qdrant_client = QdrantClient(
             url=qdrant_url,
             api_key=qdrant_api_key,
+            timeout=30,  # Increased timeout to 30 seconds
         )
     return _qdrant_client
 

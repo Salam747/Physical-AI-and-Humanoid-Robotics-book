@@ -7,7 +7,7 @@ from typing import List, Dict, Any
 from qdrant_client import models, QdrantClient
 
 from utils.embeddings import get_gemini_embedding
-# from utils.qdrant_connection import get_qdrant_client # Bypassing for diagnostics
+from utils.qdrant_connection import get_qdrant_client
 
 def retrieve_relevant_chunks(user_query: str, collection_name: str = "physical_ai_book", top_k: int = 4, score_threshold: float = 0.35) -> List[Dict[str, Any]]:
     """
@@ -33,19 +33,15 @@ def retrieve_relevant_chunks(user_query: str, collection_name: str = "physical_a
     # Embedding function hasil karo
     embedding_func = get_gemini_embedding()
 
-    # --- DIAGNOSTIC: Create a new Qdrant client instance directly ---
-    print("--- DIAGNOSTIC: Creating new QdrantClient directly in retriever ---")
-    qdrant_client = QdrantClient(
-        url=os.getenv("QDRANT_URL"),
-        api_key=os.getenv("QDRANT_API_KEY"),
-    )
-    # ---------------------------------------------------------------
+    # 2. Get Qdrant client with proper timeout settings
+    # Proper timeout settings ke sath Qdrant client hasil karo
+    qdrant_client = get_qdrant_client()
 
-    # 2. Generate embedding for the user query
+    # 3. Generate embedding for the user query
     # User query ke liye embedding banayein
     query_embedding = embedding_func.embed_query(user_query)
 
-    # 3. Search Qdrant for relevant chunks using query_points (new API)
+    # 4. Search Qdrant for relevant chunks using query_points (new API)
     # Relevant chunks ke liye Qdrant mein search karein
     print(f"Searching Qdrant with: top_k={top_k}, score_threshold={score_threshold}")
     search_results = qdrant_client.query_points(
@@ -58,7 +54,7 @@ def retrieve_relevant_chunks(user_query: str, collection_name: str = "physical_a
 
     print(f"Qdrant returned {len(search_results.points)} results")
 
-    # 4. Format and return results
+    # 5. Format and return results
     # Results ko format karein aur wapas karein
     relevant_chunks = []
     for idx, hit in enumerate(search_results.points):
